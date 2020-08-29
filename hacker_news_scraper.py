@@ -72,7 +72,7 @@ def main():
 
     subtext = soup.select('.subtext')  # Contains votes
 
-    # Uncomment line 80 if you'd like to use Twilio API to send sms
+    # Uncomment line 82 (or the statement that calls the send_sms function) if you'd like to use Twilio API to send sms
     # Change 3 to whatever number you like (3 = 3 stories, 4 = 4 stories, and so forth)
     # Keep in mind that there is a 1600 character limit for sending an sms
     # You can modify sms message body in create_sms_msg()
