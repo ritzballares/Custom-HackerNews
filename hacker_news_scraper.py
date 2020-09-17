@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from twilio.rest import Client # Download the helper library from https://www.twilio.com/docs/python/install
+# Download the helper library from https://www.twilio.com/docs/python/install
+from twilio.rest import Client
 
 
 def get_custom_hackernews(storylink, subtext):
@@ -36,7 +37,7 @@ def display_custom_hackernews(custom_hn):
 
 
 def create_sms_msg(custom_hn):
-    sms_msg = 'Hi! Here are the top three news for today:\n\n'
+    sms_msg = 'Hi! Here are the top news for today:\n\n'
 
     for story in custom_hn:
         for k, v in story.items():
@@ -57,29 +58,33 @@ def send_sms(custom_hn):
 
     sms_msg = create_sms_msg(custom_hn)
     message = client.messages.create(
-                                body=sms_msg,
-                                from_='Enter TWILIO PHONE NUMBER here',
-                                to='Enter PHONE NUMBER to send to here'
-                            )
+        body=sms_msg,
+        from_='Enter TWILIO PHONE NUMBER here',
+        to='Enter the phone number that you wish to send an SMS to here'
+    )
 
     print('Message sent successfully')
     print(message.sid)
+
 
 def main():
     res = requests.get('https://news.ycombinator.com/')
     soup = BeautifulSoup(res.text, 'html.parser')
     storylink = soup.select('.storylink')  # Contains titles and URLs
-
     subtext = soup.select('.subtext')  # Contains votes
 
-    # Uncomment line 82 (or the statement that calls the send_sms function) if you'd like to use Twilio API to send sms
-    # Change 3 to whatever number you like (3 = 3 stories, 4 = 4 stories, and so forth)
+    # Grab stories with 100 or more votes
+    custom_hn = get_custom_hackernews(storylink, subtext)
+
+    # Display custom hackernews list
+    display_custom_hackernews(custom_hn)
+
+    # Change top_n_stories to whatever number you like (3 = 3 stories, 4 = 4 stories, and so forth)
     # Keep in mind that there is a 1600 character limit for sending an sms
     # You can modify sms message body in create_sms_msg()
     # Check the README of this repo to learn how to use send_sms()
-    custom_hn = get_custom_hackernews(storylink, subtext)
-    display_custom_hackernews(custom_hn)
-    # send_sms(custom_hn[:3])
+    top_n_stories = 5
+    send_sms(custom_hn[:top_n_stories])
 
 
 if __name__ == '__main__':
